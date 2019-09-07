@@ -2,17 +2,17 @@ import aiohttp
 import asyncio
 import uvicorn
 from fastai import *
-from fastai.vision import *
+from fastai.text import *
 from io import BytesIO
 from starlette.applications import Starlette
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import HTMLResponse, JSONResponse
 from starlette.staticfiles import StaticFiles
 
-export_file_url = 'https://www.dropbox.com/s/6bgq8t6yextloqp/export.pkl?raw=1'
+export_file_url = 'https://drive.google.com/uc?export=download&id=11Uwl6adE9JpCrSTe_MkuFB8oZ0iSbjIP'
 export_file_name = 'export.pkl'
 
-classes = ['black', 'grizzly', 'teddys']
+classes = [0,1,2,3,4]
 path = Path(__file__).parent
 
 app = Starlette()
@@ -57,11 +57,10 @@ async def homepage(request):
 
 @app.route('/analyze', methods=['POST'])
 async def analyze(request):
-    img_data = await request.form()
-    img_bytes = await (img_data['file'].read())
-    img = open_image(BytesIO(img_bytes))
-    prediction = learn.predict(img)[0]
-    return JSONResponse({'result': str(prediction)})
+    data = await request.form()
+    content = data['content']
+    prediction = learn.predict(content)[0]
+    return JSONResponse({'Review Rating': str(prediction)})
 
 
 if __name__ == '__main__':
